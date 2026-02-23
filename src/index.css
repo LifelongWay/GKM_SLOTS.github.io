@@ -1,0 +1,518 @@
+/* ===== CSS Variables ===== */
+:root {
+  --bg-primary: #fdf6f0;
+  --bg-secondary: #fff9f5;
+  --bg-card: #ffffff;
+  --accent-pink: #e8a0bf;
+  --accent-purple: #ba94d1;
+  --accent-lavender: #d4b8e0;
+  --accent-peach: #f2c4a0;
+  --accent-mint: #a8d8c8;
+  --accent-gold: #f0d080;
+  --text-primary: #4a3728;
+  --text-secondary: #7a6558;
+  --text-muted: #b09a8c;
+  --border-light: #f0e4da;
+  --border-medium: #e5d5c8;
+  --shadow-soft: 0 2px 12px rgba(186, 148, 209, 0.12);
+  --shadow-hover: 0 4px 20px rgba(186, 148, 209, 0.2);
+  --shadow-card: 0 1px 8px rgba(186, 148, 209, 0.08);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --font-body: 'Quicksand', sans-serif;
+  --font-display: 'Pacifico', cursive;
+}
+
+/* ===== Reset & Base ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(232, 160, 191, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(186, 148, 209, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(168, 216, 200, 0.08) 0%, transparent 50%);
+}
+
+/* ===== Floating Music Notes ===== */
+.floating-notes {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.floating-note {
+  position: absolute;
+  top: -2rem;
+  opacity: 0.12;
+  animation: floatDown linear infinite;
+}
+
+@keyframes floatDown {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.12;
+  }
+  90% {
+    opacity: 0.12;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ===== App Layout ===== */
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Header ===== */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem 1rem 1.5rem;
+  background: linear-gradient(135deg, rgba(232, 160, 191, 0.15), rgba(186, 148, 209, 0.15), rgba(168, 216, 200, 0.1));
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-soft);
+}
+
+.header__top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.header__note {
+  font-size: 1.8rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.header__note:last-child {
+  animation-delay: 0.3s;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.header__title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header__subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.header__meta {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.badge--week {
+  background: rgba(186, 148, 209, 0.18);
+  color: var(--accent-purple);
+  border: 1px solid rgba(186, 148, 209, 0.25);
+}
+
+.badge--slots {
+  background: rgba(168, 216, 200, 0.2);
+  color: #5a9a82;
+  border: 1px solid rgba(168, 216, 200, 0.3);
+}
+
+/* ===== Schedule ===== */
+.main {
+  flex: 1;
+}
+
+.schedule-wrapper {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.schedule {
+  display: grid;
+  grid-template-columns: 100px repeat(5, 1fr);
+  gap: 3px;
+  min-width: 750px;
+  background: var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-light);
+}
+
+.schedule__corner {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-lavender));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.schedule__corner-icon {
+  font-size: 1.3rem;
+  filter: brightness(1.2);
+}
+
+.schedule__day-header {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-lavender));
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.day-name {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.schedule__time-label {
+  background: var(--bg-secondary);
+  padding: 0.6rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  gap: 0;
+  line-height: 1.2;
+}
+
+.time-dash {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.schedule__cell {
+  background: var(--bg-card);
+  padding: 4px;
+  min-height: 56px;
+  transition: background 0.2s;
+}
+
+.schedule__cell:hover {
+  background: rgba(232, 160, 191, 0.04);
+}
+
+/* ===== Time Slot ===== */
+.slot {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  padding: 0.3rem 0.4rem;
+  gap: 0.3rem;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.slot--free {
+  border: 2px dashed var(--border-medium);
+  background: var(--bg-secondary);
+}
+
+.slot--free:hover {
+  border-color: var(--accent-pink);
+  background: rgba(232, 160, 191, 0.06);
+}
+
+.slot--editing {
+  border-color: var(--accent-purple);
+  background: rgba(186, 148, 209, 0.06);
+  box-shadow: 0 0 0 2px rgba(186, 148, 209, 0.15);
+}
+
+.slot--booked {
+  background: linear-gradient(135deg, rgba(232, 160, 191, 0.12), rgba(186, 148, 209, 0.12));
+  border: 2px solid var(--accent-lavender);
+  box-shadow: var(--shadow-card);
+}
+
+.slot__icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.slot__name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slot__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  outline: none;
+  min-width: 0;
+}
+
+.slot__input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.slot__actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.slot--booked:hover .slot__actions {
+  opacity: 1;
+}
+
+.slot__btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0.15rem 0.3rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.slot__btn--confirm {
+  background: var(--accent-mint);
+  color: white;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.45rem;
+}
+
+.slot__btn--confirm:hover {
+  background: #8ec8b5;
+  transform: scale(1.05);
+}
+
+.slot__btn--cancel {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.slot__btn--cancel:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.slot__btn--edit:hover {
+  background: rgba(186, 148, 209, 0.2);
+  transform: scale(1.1);
+}
+
+.slot__btn--remove:hover {
+  background: rgba(220, 100, 100, 0.15);
+  color: #c44;
+  transform: scale(1.1);
+}
+
+/* ===== Notes ===== */
+.notes {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-light);
+}
+
+.notes__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.notes__title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--accent-purple);
+}
+
+.notes__icon {
+  font-size: 1.2rem;
+}
+
+.notes__subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.notes__textarea {
+  width: 100%;
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  resize: vertical;
+  min-height: 100px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  line-height: 1.6;
+}
+
+.notes__textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.notes__textarea:focus {
+  border-color: var(--accent-lavender);
+  box-shadow: 0 0 0 3px rgba(186, 148, 209, 0.12);
+}
+
+.notes__footer {
+  text-align: right;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-top: 2rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 850px) {
+  .header__title {
+    font-size: 1.8rem;
+  }
+
+  .schedule {
+    min-width: 650px;
+  }
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding: 1rem 0.5rem;
+  }
+
+  .header {
+    padding: 1.5rem 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .header__title {
+    font-size: 1.5rem;
+  }
+
+  .header__meta {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .notes {
+    padding: 1rem;
+  }
+
+  .notes__title {
+    font-size: 1.2rem;
+  }
+}
+
+/* ===== Scrollbar styling ===== */
+.schedule-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.schedule-wrapper::-webkit-scrollbar-track {
+  background: var(--border-light);
+  border-radius: 3px;
+}
+
+.schedule-wrapper::-webkit-scrollbar-thumb {
+  background: var(--accent-lavender);
+  border-radius: 3px;
+}
+
+.schedule-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-purple);
+}
