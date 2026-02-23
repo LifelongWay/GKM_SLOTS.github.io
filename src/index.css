@@ -280,14 +280,13 @@ body {
 
 .schedule {
   display: grid;
-  grid-template-columns: 100px repeat(5, 1fr);
+  grid-template-columns: 100px repeat(5, minmax(0, 1fr));
   gap: 3px;
-  min-width: 750px;
+  min-width: 600px;
   background: var(--border-light);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-soft);
   border: 1px solid var(--border-light);
-  overflow: hidden;
 }
 
 .schedule__corner {
@@ -341,6 +340,7 @@ body {
   background: var(--bg-card);
   padding: 4px;
   min-height: 56px;
+  min-width: 0;
   transition: background 0.2s;
 }
 
@@ -362,6 +362,8 @@ body {
   gap: 0.3rem;
   transition: all 0.2s ease;
   min-height: 48px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .slot--free {
@@ -742,7 +744,8 @@ body {
   }
 
   .schedule {
-    min-width: 650px;
+    grid-template-columns: 80px repeat(5, minmax(0, 1fr));
+    min-width: 520px;
   }
 }
 
