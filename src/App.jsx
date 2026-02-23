@@ -1,7 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
 import Schedule from './components/Schedule';
 import Notes from './components/Notes';
-import { loadSlots, saveSlots, loadNotes, saveNotes, getWeekKey } from './utils';
+import {
+  subscribeSlots, saveSlot, removeSlot,
+  subscribeNotes, addNote, removeNote,
+  getWeekKey, migrateLocalStorage,
+} from './utils';
 
 // Floating music notes for decoration
 const FLOATING_NOTES = ['♪', '♫', '♬', '♩', '🎵', '🎶', '🎸', '🎹', '🎻', '🥁'];
@@ -28,11 +32,44 @@ function FloatingNotes() {
 }
 
 export default function App() {
-  const [slots, setSlots] = useState(loadSlots);
-  const [notes, setNotes] = useState(loadNotes);
+  const [slots, setSlots] = useState({});
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState(() => localStorage.getItem('gkm-theme') || 'light');
 
   const weekKey = getWeekKey();
+
+  // Migrate old localStorage data to Firebase, then subscribe to real-time updates
+  useEffect(() => {
+    let unsubSlots;
+    let unsubNotes;
+
+    migrateLocalStorage().then(() => {
+      let slotsLoaded = false;
+      let notesLoaded = false;
+
+      const checkReady = () => {
+        if (slotsLoaded && notesLoaded) setLoading(false);
+      };
+
+      unsubSlots = subscribeSlots((data) => {
+        setSlots(data);
+        slotsLoaded = true;
+        checkReady();
+      });
+
+      unsubNotes = subscribeNotes((data) => {
+        setNotes(data);
+        notesLoaded = true;
+        checkReady();
+      });
+    });
+
+    return () => {
+      if (unsubSlots) unsubSlots();
+      if (unsubNotes) unsubNotes();
+    };
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -42,50 +79,44 @@ export default function App() {
   const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
 
   const handleBook = useCallback((key, name) => {
-    setSlots((prev) => {
-      const next = { ...prev, [key]: name };
-      saveSlots(next);
-      return next;
-    });
+    saveSlot(key, name);
   }, []);
 
   const handleClear = useCallback((key) => {
-    setSlots((prev) => {
-      const next = { ...prev };
-      delete next[key];
-      saveSlots(next);
-      return next;
-    });
+    removeSlot(key);
   }, []);
 
   const handleAddNote = useCallback((text, author) => {
-    setNotes((prev) => {
-      const newNote = {
-        id: Date.now().toString(),
-        text,
-        author,
-        date: new Date().toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        }),
-      };
-      const next = [newNote, ...prev].slice(0, 50);
-      saveNotes(next);
-      return next;
-    });
+    const newNote = {
+      id: Date.now().toString(),
+      text,
+      author,
+      date: new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+    };
+    addNote(newNote);
   }, []);
 
   const handleRemoveNote = useCallback((id) => {
-    setNotes((prev) => {
-      const next = prev.filter((n) => n.id !== id);
-      saveNotes(next);
-      return next;
-    });
+    removeNote(id);
   }, []);
 
   const bookedCount = Object.keys(slots).length;
   const totalSlots = 40; // 8 hours × 5 days
+
+  if (loading) {
+    return (
+      <div className="app">
+        <FloatingNotes />
+        <div style={{ textAlign: 'center', marginTop: '4rem', fontSize: '1.3rem' }}>
+          Loading...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
