@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { DAYS, HOURS, formatHour, slotKey } from '../utils';
 import TimeSlot from './TimeSlot';
 
@@ -17,8 +18,8 @@ export default function Schedule({ slots, onBook, onClear }) {
 
         {/* Time rows */}
         {HOURS.map((hour) => (
-          <>
-            <div key={`time-${hour}`} className="schedule__time-label">
+          <Fragment key={hour}>
+            <div className="schedule__time-label">
               <span>{formatHour(hour)}</span>
               <span className="time-dash">–</span>
               <span>{formatHour(hour + 1)}</span>
@@ -35,7 +36,7 @@ export default function Schedule({ slots, onBook, onClear }) {
                 </div>
               );
             })}
-          </>
+          </Fragment>
         ))}
       </div>
     </div>

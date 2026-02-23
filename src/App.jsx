@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Schedule from './components/Schedule';
 import Notes from './components/Notes';
 import { loadSlots, saveSlots, loadNotes, saveNotes, getWeekKey } from './utils';
@@ -30,8 +30,16 @@ function FloatingNotes() {
 export default function App() {
   const [slots, setSlots] = useState(loadSlots);
   const [notes, setNotes] = useState(loadNotes);
+  const [theme, setTheme] = useState(() => localStorage.getItem('gkm-theme') || 'light');
 
   const weekKey = getWeekKey();
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('gkm-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
 
   const handleBook = useCallback((key, name) => {
     setSlots((prev) => {
@@ -50,9 +58,30 @@ export default function App() {
     });
   }, []);
 
-  const handleNotesChange = useCallback((val) => {
-    setNotes(val);
-    saveNotes(val);
+  const handleAddNote = useCallback((text, author) => {
+    setNotes((prev) => {
+      const newNote = {
+        id: Date.now().toString(),
+        text,
+        author,
+        date: new Date().toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+      };
+      const next = [newNote, ...prev].slice(0, 50);
+      saveNotes(next);
+      return next;
+    });
+  }, []);
+
+  const handleRemoveNote = useCallback((id) => {
+    setNotes((prev) => {
+      const next = prev.filter((n) => n.id !== id);
+      saveNotes(next);
+      return next;
+    });
   }, []);
 
   const bookedCount = Object.keys(slots).length;
@@ -61,6 +90,14 @@ export default function App() {
   return (
     <div className="app">
       <FloatingNotes />
+
+      <button
+        className="theme-toggle"
+        onClick={toggleTheme}
+        title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+      >
+        {theme === 'light' ? '🌙' : '☀️'}
+      </button>
 
       <header className="header">
         <div className="header__top">
@@ -81,7 +118,7 @@ export default function App() {
 
       <main className="main">
         <Schedule slots={slots} onBook={handleBook} onClear={handleClear} />
-        <Notes value={notes} onChange={handleNotesChange} />
+        <Notes notes={notes} onAdd={handleAddNote} onRemove={handleRemoveNote} />
       </main>
 
       <footer className="footer">

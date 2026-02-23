@@ -44,14 +44,17 @@ export function saveSlots(slots) {
 
 export function loadNotes() {
   try {
-    return localStorage.getItem(NOTES_KEY) || '';
+    const data = localStorage.getItem(NOTES_KEY);
+    if (!data) return [];
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return '';
+    return [];
   }
 }
 
 export function saveNotes(notes) {
-  localStorage.setItem(NOTES_KEY, notes);
+  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
 }
 
 export function slotKey(day, hour) {
