@@ -510,6 +510,90 @@ body {
   color: #e66;
 }
 
+/* ===== Split / Half-Slot Button ===== */
+.slot__btn--split {
+  background: rgba(186, 148, 209, 0.15);
+  color: var(--accent-purple);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+  flex-shrink: 0;
+}
+
+.slot__btn--split:hover {
+  background: rgba(186, 148, 209, 0.3);
+  transform: scale(1.1);
+}
+
+[data-theme="dark"] .slot__btn--split {
+  background: rgba(176, 136, 200, 0.2);
+}
+
+[data-theme="dark"] .slot__btn--split:hover {
+  background: rgba(176, 136, 200, 0.35);
+}
+
+/* ===== Split Cell (two half-slots stacked) ===== */
+.slot-cell--split {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  height: 100%;
+}
+
+.slot-cell__half {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  min-height: 0;
+}
+
+.slot-cell__half-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  width: 30px;
+  text-align: center;
+  line-height: 1;
+}
+
+.slot-cell__half-slot {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+/* ===== Compact Slot (for half-hour mode) ===== */
+.slot--compact {
+  min-height: 30px;
+  padding: 0.1rem 0.25rem;
+  gap: 0.2rem;
+}
+
+.slot--compact .slot__icon {
+  font-size: 0.7rem;
+}
+
+.slot--compact .slot__name {
+  font-size: 0.7rem;
+}
+
+.slot--compact .slot__input {
+  font-size: 0.7rem;
+}
+
+.slot--compact .slot__btn {
+  padding: 0.1rem 0.2rem;
+  font-size: 0.6rem;
+}
+
+.slot--compact .slot__btn--confirm {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.3rem;
+}
+
 /* ===== Notes Section ===== */
 .notes {
   background: var(--bg-card);
@@ -877,6 +961,54 @@ body {
   /* Slightly taller minimum for mobile slots */
   .day-card__slot .slot {
     min-height: 42px;
+  }
+
+  /* Split rows in mobile cards */
+  .day-card__row--split {
+    flex-direction: column;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .day-card__row--split:last-child {
+    border-bottom: none;
+  }
+
+  .day-card__half-row {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .day-card__half-row:first-child {
+    border-bottom: 1px dashed var(--border-light);
+  }
+
+  .day-card__row--split .day-card__time {
+    flex-shrink: 0;
+    width: 58px;
+    padding: 0.3rem 0.25rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border-light);
+  }
+
+  .day-card__row--split .day-card__slot {
+    flex: 1;
+    min-width: 0;
+    padding: 2px 3px;
+  }
+
+  .day-card__row--split .day-card__slot .slot {
+    min-height: 36px;
+  }
+
+  .day-card__row--split .day-card__slot .slot__actions {
+    opacity: 1;
   }
 }
 

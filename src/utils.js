@@ -10,15 +10,31 @@ export function getWeekKey() {
   return `${now.getFullYear()}-W${weekNumber}`;
 }
 
-export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+export const DAYS = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma'];
+export const DAY_SHORT = {
+  Pazartesi: 'Pzt',
+  Salı: 'Sal',
+  Çarşamba: 'Çar',
+  Perşembe: 'Per',
+  Cuma: 'Cum',
+};
 export const HOURS = Array.from({ length: 8 }, (_, i) => i + 9); // 9 to 16 (9:00-17:00)
 
 export function formatHour(hour) {
   return `${hour.toString().padStart(2, '0')}:00`;
 }
 
+export function formatHalf(hour, half) {
+  const min = half === 1 ? '00' : '30';
+  return `${hour.toString().padStart(2, '0')}:${min}`;
+}
+
 export function slotKey(day, hour) {
   return `${day}-${hour}`;
+}
+
+export function halfSlotKey(day, hour, half) {
+  return `${day}-${hour}-h${half}`;
 }
 
 // Firebase Realtime Database helpers

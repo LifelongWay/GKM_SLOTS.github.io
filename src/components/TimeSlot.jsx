@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function TimeSlot({ name, onBook, onClear }) {
+export default function TimeSlot({ name, onBook, onClear, onSplit, canSplit, compact }) {
   const [editing, setEditing] = useState(false);
   const [input, setInput] = useState(name || '');
 
@@ -23,7 +23,7 @@ export default function TimeSlot({ name, onBook, onClear }) {
   // Slot is booked
   if (name && !editing) {
     return (
-      <div className="slot slot--booked">
+      <div className={`slot slot--booked ${compact ? 'slot--compact' : ''}`}>
         <span className="slot__icon">🎶</span>
         <span className="slot__name">{name}</span>
         <div className="slot__actions">
@@ -49,7 +49,7 @@ export default function TimeSlot({ name, onBook, onClear }) {
   // Editing or empty slot
   if (editing || !name) {
     return (
-      <div className={`slot slot--free ${editing ? 'slot--editing' : ''}`}>
+      <div className={`slot slot--free ${editing ? 'slot--editing' : ''} ${compact ? 'slot--compact' : ''}`}>
         <input
           className="slot__input"
           type="text"
@@ -70,6 +70,15 @@ export default function TimeSlot({ name, onBook, onClear }) {
             title="Cancel"
           >
             ✕
+          </button>
+        )}
+        {canSplit && !editing && (
+          <button
+            className="slot__btn slot__btn--split"
+            onClick={onSplit}
+            title="Split into half slots"
+          >
+            ½
           </button>
         )}
       </div>
