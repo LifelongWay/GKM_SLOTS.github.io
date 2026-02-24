@@ -14,10 +14,10 @@ export default function Schedule({ slots, onBook, onClear }) {
     });
   };
 
-  const renderCell = (day, hour) => {
-    const fullKey = slotKey(day, hour);
-    const h1Key = halfSlotKey(day, hour, 1);
-    const h2Key = halfSlotKey(day, hour, 2);
+  const renderCell = (dayIndex, hour) => {
+    const fullKey = slotKey(dayIndex, hour);
+    const h1Key = halfSlotKey(dayIndex, hour, 1);
+    const h2Key = halfSlotKey(dayIndex, hour, 2);
     const hasFullBooking = !!slots[fullKey];
     const hasHalfBooking = !!slots[h1Key] || !!slots[h2Key];
     const isSplit = splitCells.has(fullKey) || hasHalfBooking;
@@ -86,11 +86,11 @@ export default function Schedule({ slots, onBook, onClear }) {
                 <span className="time-dash">–</span>
                 <span>{formatHour(hour + 1)}</span>
               </div>
-              {DAYS.map((day) => {
-                const key = slotKey(day, hour);
+              {DAYS.map((day, dayIndex) => {
+                const key = slotKey(dayIndex, hour);
                 return (
                   <div key={key} className="schedule__cell">
-                    {renderCell(day, hour)}
+                    {renderCell(dayIndex, hour)}
                   </div>
                 );
               })}
@@ -101,14 +101,14 @@ export default function Schedule({ slots, onBook, onClear }) {
 
       {/* Mobile card layout */}
       <div className="schedule-mobile">
-        {DAYS.map((day) => (
+        {DAYS.map((day, dayIndex) => (
           <div key={day} className="day-card">
             <div className="day-card__header">{day}</div>
             <div className="day-card__slots">
               {HOURS.map((hour) => {
-                const fullKey = slotKey(day, hour);
-                const h1Key = halfSlotKey(day, hour, 1);
-                const h2Key = halfSlotKey(day, hour, 2);
+                const fullKey = slotKey(dayIndex, hour);
+                const h1Key = halfSlotKey(dayIndex, hour, 1);
+                const h2Key = halfSlotKey(dayIndex, hour, 2);
                 const hasFullBooking = !!slots[fullKey];
                 const hasHalfBooking = !!slots[h1Key] || !!slots[h2Key];
                 const isSplit = splitCells.has(fullKey) || hasHalfBooking;

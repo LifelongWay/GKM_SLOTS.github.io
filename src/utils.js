@@ -1,4 +1,4 @@
-import { ref, set, remove, onValue } from 'firebase/database';
+import { ref, set, remove, onValue, get, update } from 'firebase/database';
 import { db } from './firebase';
 
 // Get ISO week number for weekly reset logic
@@ -29,12 +29,12 @@ export function formatHalf(hour, half) {
   return `${hour.toString().padStart(2, '0')}:${min}`;
 }
 
-export function slotKey(day, hour) {
-  return `${day}-${hour}`;
+export function slotKey(dayIndex, hour) {
+  return `d${dayIndex}-${hour}`;
 }
 
-export function halfSlotKey(day, hour, half) {
-  return `${day}-${hour}-h${half}`;
+export function halfSlotKey(dayIndex, hour, half) {
+  return `d${dayIndex}-${hour}-h${half}`;
 }
 
 // Firebase Realtime Database helpers
@@ -82,6 +82,47 @@ export function addNote(note) {
 
 export function removeNote(id) {
   return remove(ref(db, `${weekPath('notes')}/${id}`));
+}
+
+// --- Migrate old day-name-based slot keys to index-based keys ---
+
+const OLD_ENGLISH = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const OLD_TURKISH = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma'];
+
+const KEY_MIGRATION_FLAG = 'gkm-keys-migrated-to-index';
+
+export async function migrateSlotKeys() {
+  if (localStorage.getItem(KEY_MIGRATION_FLAG)) return;
+
+  const slotsRef = ref(db, weekPath('slots'));
+  const snapshot = await get(slotsRef);
+  const data = snapshot.val();
+  if (!data) {
+    localStorage.setItem(KEY_MIGRATION_FLAG, 'true');
+    return;
+  }
+
+  const updates = {};
+  for (const [key, value] of Object.entries(data)) {
+    // Match keys like "Monday-9", "Pazartesi-9", "Monday-9-h1", "Pazartesi-9-h1"
+    const match = key.match(/^(.+?)-(\d+)(-h[12])?$/);
+    if (!match) continue;
+    const [, dayName, hour, halfSuffix] = match;
+
+    let dayIndex = OLD_ENGLISH.indexOf(dayName);
+    if (dayIndex === -1) dayIndex = OLD_TURKISH.indexOf(dayName);
+    if (dayIndex === -1) continue; // already migrated or unknown
+
+    const newKey = `d${dayIndex}-${hour}${halfSuffix || ''}`;
+    updates[newKey] = value;
+    updates[key] = null; // delete old key
+  }
+
+  if (Object.keys(updates).length > 0) {
+    await update(slotsRef, updates);
+  }
+
+  localStorage.setItem(KEY_MIGRATION_FLAG, 'true');
 }
 
 // --- localStorage migration (one-time) ---

@@ -4,7 +4,7 @@ import Notes from './components/Notes';
 import {
   subscribeSlots, saveSlot, removeSlot,
   subscribeNotes, addNote, removeNote,
-  getWeekKey, migrateLocalStorage,
+  getWeekKey, migrateLocalStorage, migrateSlotKeys,
 } from './utils';
 
 // Floating music notes for decoration
@@ -44,7 +44,7 @@ export default function App() {
     let unsubSlots;
     let unsubNotes;
 
-    migrateLocalStorage().then(() => {
+    migrateLocalStorage().then(() => migrateSlotKeys()).then(() => {
       let slotsLoaded = false;
       let notesLoaded = false;
 
